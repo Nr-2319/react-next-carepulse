@@ -103,7 +103,7 @@ const PatientForm = () => {
                     placeholder="(555) 1234-567"
                 />
 
-                <SubmitButton isLoading={isLoading} className={""}>
+                <SubmitButton isLoading={isLoading}>
                     Get Started
                 </SubmitButton>
             </form>
