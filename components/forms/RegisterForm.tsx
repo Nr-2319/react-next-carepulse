@@ -8,15 +8,20 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import CustomFormField from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import { useState } from "react";
-import { UserFormValidation } from "@/lib/validation";
+import { PatientFormValidation } from "@/lib/validation";
 import { useRouter } from "next/navigation";
-import { createUser } from "@/lib/actions/patient.actions";
 import { FormFieldType } from "./PatientForm";
-import { Doctors, GenderOptions, IdentificationTypes } from "@/constants";
+import {
+    Doctors,
+    GenderOptions,
+    IdentificationTypes,
+    PatientFormDefaultValues,
+} from "@/constants";
 import { Label } from "../ui/label";
 import { SelectItem } from "../ui/select";
 import Image from "next/image";
 import FileUploader from "../FileUploader";
+import { registerPatient } from "@/lib/actions/patient.actions";
 
 const RegisterForm = ({ user }: { user: User }) => {
     // routing
@@ -25,9 +30,10 @@ const RegisterForm = ({ user }: { user: User }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     // Define your form.
-    const form = useForm<z.infer<typeof UserFormValidation>>({
-        resolver: zodResolver(UserFormValidation),
+    const form = useForm<z.infer<typeof PatientFormValidation>>({
+        resolver: zodResolver(PatientFormValidation),
         defaultValues: {
+            ...PatientFormDefaultValues,
             name: "",
             email: "",
             phone: "",
@@ -35,25 +41,37 @@ const RegisterForm = ({ user }: { user: User }) => {
     });
 
     // Define a submit handler.
-    async function onSubmit({
-        name,
-        email,
-        phone,
-    }: z.infer<typeof UserFormValidation>) {
+    async function onSubmit(values: z.infer<typeof PatientFormValidation>) {
         setIsLoading(true);
 
+        let formData;
+
+        if (
+            values.identificationDocument &&
+            values.identificationDocument.length > 0
+        ) {
+            const blobFile = new Blob([values.identificationDocument[0]], {
+                type: values.identificationDocument[0].type,
+            });
+
+            formData = new FormData();
+            formData.append("blobFile", blobFile);
+            formData.append("fileName", values.identificationDocument[0].name);
+        }
+
         try {
-            const userData = {
-                name,
-                email,
-                phone,
+            const patientData = {
+                ...values,
+                userId: user.$id,
+                birthDate: new Date(values.birthDate),
+                identificationDocument: formData,
             };
 
-            const user = await createUser(userData);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const patient = await registerPatient(patientData);
 
-            if (user) {
-                router.push(`/patients/${user.$id}/register`);
-            }
+            if (patient) router.push(`/patients/${user.$id}/new-appointment`);
         } catch (error) {
             console.log("error", error);
         }
@@ -203,7 +221,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                 >
                     {Doctors.map((doctor: any) => (
                         <SelectItem key={doctor.name} value={doctor.name}>
-                            <div className="flex cursor-pointer items-center gap-2">
+                            <div className="flex cursor-pointer items-center gap-2 hover:bg-gray-600">
                                 <Image
                                     src={doctor.image}
                                     alt={doctor.name}
@@ -286,7 +304,11 @@ const RegisterForm = ({ user }: { user: User }) => {
                     placeholder="Select identification type"
                 >
                     {IdentificationTypes.map((type: any) => (
-                        <SelectItem key={type} value={type}>
+                        <SelectItem
+                            key={type}
+                            value={type}
+                            className="cursor-pointer hover:bg-gray-600"
+                        >
                             {type}
                         </SelectItem>
                     ))}
@@ -323,20 +345,20 @@ const RegisterForm = ({ user }: { user: User }) => {
                 </section>
 
                 <CustomFormField
-                    fieldType = {FormFieldType.CHECKBOX}
-                    control = {form.control}
+                    fieldType={FormFieldType.CHECKBOX}
+                    control={form.control}
                     name="treatmentConsent"
                     label="I consent to treatment"
                 />
                 <CustomFormField
-                    fieldType = {FormFieldType.CHECKBOX}
-                    control = {form.control}
+                    fieldType={FormFieldType.CHECKBOX}
+                    control={form.control}
                     name="disclosureConsent"
                     label="I consent to disclosure of information"
                 />
                 <CustomFormField
-                    fieldType = {FormFieldType.CHECKBOX}
-                    control = {form.control}
+                    fieldType={FormFieldType.CHECKBOX}
+                    control={form.control}
                     name="privacyConsent"
                     label="I consent to privacy policy"
                 />
