@@ -220,8 +220,8 @@ const RegisterForm = ({ user }: { user: User }) => {
                     placeholder="Select a physician"
                 >
                     {Doctors.map((doctor: any) => (
-                        <SelectItem key={doctor.name} value={doctor.name}>
-                            <div className="flex cursor-pointer items-center gap-2 hover:bg-gray-600">
+                        <SelectItem key={doctor.name} className="hover:bg-slate-600 cursor-pointer" value={doctor.name}>
+                            <div className="flex cursor-pointer items-center gap-2">
                                 <Image
                                     src={doctor.image}
                                     alt={doctor.name}
@@ -307,7 +307,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                         <SelectItem
                             key={type}
                             value={type}
-                            className="cursor-pointer hover:bg-gray-600"
+                            className="hover:bg-slate-600 cursor-pointer"
                         >
                             {type}
                         </SelectItem>
