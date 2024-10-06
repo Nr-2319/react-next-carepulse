@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -46,7 +47,7 @@ const PasskeyModal = () => {
     }, [encryptedKey]);
 
     const validatePasskey = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        // default behaviour of browser when click on submit btn to reload - we prevent that
+        // default behaviour of browser when click on submit btn to reload
         e.preventDefault(); 
 
 
