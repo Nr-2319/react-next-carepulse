@@ -1,10 +1,13 @@
-import DataTable from "@/components/table/DataTable";
+import {DataTable} from "@/components/table/DataTable";
 import StatCard from "@/components/StatCard";
 import { getRecentAppointmentsList } from "@/lib/actions/appointment.actions";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import columns from "@/components/table/columns";
+import {columns} from "@/components/table/columns";
+
+
+
 
 const Admin = async () => {
     const appointments = await getRecentAppointmentsList();
@@ -56,6 +59,7 @@ const Admin = async () => {
 
 
                 <DataTable data={appointments.documents} columns={columns} />
+                
             </main>
         </div>
     );
