@@ -101,18 +101,18 @@ export const updateAppointment = async ({
             throw new Error("Appointment not found");
         }
 
-        // const smsMessage = `
-        // Hi, It's CarePulse.
-        // ${
-        //     type === "schedule"
-        //         ? `Your appointment has been scheduled for ${formatDateTime(
-        //               appointment.schedule!
-        //           )}`
-        //         : `We regret to inform you that your appointment has been cancelled. Reason ${appointment.cancellationReason}`
-        // }
-        // `;
+        const smsMessage = `
+        Hi, It's CarePulse.
+        ${
+            type === "schedule"
+                ? `Your appointment has been scheduled for ${
+                      formatDateTime(appointment.schedule!).dateTime
+                  } with ${appointment.primaryPhysician}`
+                : `We regret to inform you that your appointment has been cancelled with ${appointment.primaryPhysician}. For the following reason: ${appointment.cancellationReason}`
+        }
+        `;
 
-        // await sendSMSNotification(userId, smsMessage);
+        await sendSMSNotification(userId, smsMessage);
 
         revalidatePath("/admin");
 
