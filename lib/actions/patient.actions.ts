@@ -24,7 +24,6 @@ export const createUser = async (user: CreateUserParams) => {
             user.name
         );
 
-        console.log({ newUser });
         return newUser;
     } catch (error: any) {
         if (error && error?.code === 409) {
