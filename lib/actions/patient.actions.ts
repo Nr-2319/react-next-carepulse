@@ -24,14 +24,24 @@ export const createUser = async (user: CreateUserParams) => {
             user.name
         );
 
-        return newUser;
+        const obj = {
+            user: newUser,
+            isNew: true,
+        };
+
+        return obj;
     } catch (error: any) {
         if (error && error?.code === 409) {
             const documents = await users.list([
                 Query.equal("email", [user.email]),
             ]);
 
-            return documents?.users[0];
+            const obj = {
+                user: documents?.users[0],
+                isNew: false,
+            };
+
+            return obj;
         }
     }
 };
@@ -51,7 +61,7 @@ export const getPatient = async (userId: string) => {
         const patients = await databases.listDocuments(
             DATABASE_ID!,
             PATIENT_COLLECTION_ID!,
-            [Query.equal('userId', userId)]
+            [Query.equal("userId", userId)]
         );
 
         return parseStringify(patients.documents[0]);

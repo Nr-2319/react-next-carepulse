@@ -52,10 +52,15 @@ const PatientForm = () => {
                 phone,
             };
 
-            const user = await createUser(userData);
+            const userDetails = await createUser(userData);
 
-            if (user) {
-                router.push(`/patients/${user.$id}/register`);
+            if (userDetails) {
+                const { user, isNew } = userDetails;
+                if (isNew) {
+                    router.push(`/patients/${user.$id}/register`);
+                } else {
+                    router.push(`/patients/${user.$id}/new-appointment`);
+                }
             }
         } catch (error) {
             console.log("error", error);
@@ -80,7 +85,7 @@ const PatientForm = () => {
                     control={form.control}
                     name="name"
                     label="Full Name"
-                    placeholder="anyone"
+                    placeholder="eg. Mark"
                     iconSrc="/assets/icons/user.svg"
                     iconAlt="user"
                 />
@@ -90,7 +95,7 @@ const PatientForm = () => {
                     control={form.control}
                     name="email"
                     label="Email"
-                    placeholder="anyone@test.com"
+                    placeholder="eg. your@email.com"
                     iconSrc="/assets/icons/email.svg"
                     iconAlt="email"
                 />
@@ -103,9 +108,7 @@ const PatientForm = () => {
                     placeholder="(555) 1234-567"
                 />
 
-                <SubmitButton isLoading={isLoading}>
-                    Get Started
-                </SubmitButton>
+                <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>
             </form>
         </Form>
     );
